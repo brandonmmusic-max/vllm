@@ -2169,6 +2169,29 @@ class DeepseekV2ForCausalLM(
         )
 
     def load_weights(self, weights: Iterable[tuple[str, torch.Tensor]]) -> set[str]:
+        # --- glm52-mdispatch: drop nextn-layer weights when MTP is off ---
+        # get_spec_layer_idx_from_weight_name only diverts MTP tensors when
+        # num_nextn_predict_layers > 0. With MTP disabled those layers are
+        # never built, so their checkpoint tensors reach AutoWeightsLoader
+        # with no destination and raise KeyError (e.g.
+        # 'layers.78.eh_proj.weight'). Inert when MTP is enabled.
+        # See patch_dsv2_skip_mtp_weights.py.
+        try:
+            _nextn = int(getattr(self.config, "num_nextn_predict_layers", 0) or 0)
+            _n_hidden = int(getattr(self.config, "num_hidden_layers", 0) or 0)
+        except (TypeError, ValueError):
+            _nextn, _n_hidden = 1, 0
+        if _nextn == 0 and _n_hidden > 0:
+            import re as _glm52_re
+
+            _glm52_pat = _glm52_re.compile(r"(?:^|\.)layers\.(\d+)\.")
+
+            def _glm52_keep(_name: str) -> bool:
+                _m = _glm52_pat.search(_name)
+                return _m is None or int(_m.group(1)) < _n_hidden
+
+            weights = ((_n, _w) for _n, _w in weights if _glm52_keep(_n))
+        # --- end glm52-mdispatch ---
         loader = AutoWeightsLoader(self)
         return loader.load_weights(weights)
 

@@ -115,6 +115,24 @@ def process_weights_after_loading(
             # the caching allocator, which starves the OS on UMA devices.
             release_device_memory_under_pressure(target_device)
 
+    # glm52-r7-release-ballast: every fused MoE layer is prepared by now, so
+    # no further ballast request can occur. The pool is never-read scratch
+    # (~0.8 GiB) that otherwise stays resident for the process lifetime and
+    # comes directly out of the KV cache. Released once, here, because
+    # releasing it per layer refragments the heap and OOMs the load.
+    try:
+        from vllm.model_executor.layers.quantization import exl3 as _exl3_ballast
+
+        _pool = getattr(_exl3_ballast, "_R7_BALLAST_POOL", None)
+        if _pool:
+            _pool.clear()
+            import gc as _gc_ballast
+
+            _gc_ballast.collect()
+            torch.cuda.empty_cache()
+    except Exception:  # a build without the R7 loader is unaffected
+        pass
+
     # Initialize post-load attention weights for Attention, MLA, and MM encoder.
     # NOTE: Happens after other modules so we can easily decompress weights.
     for _, module in model.named_modules():
