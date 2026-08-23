@@ -1242,6 +1242,30 @@ def test_r7_native_layer_budget_is_unlimited_by_default(monkeypatch) -> None:
     assert exl3_module._r7_fused_layer_budget() == 48
 
 
+def test_r7_without_dedicated_kernel_requires_unbudgeted_b12x(monkeypatch) -> None:
+    method = object.__new__(Exl3MoEMethod)
+    layer = SimpleNamespace()
+    calls = []
+
+    monkeypatch.setattr(
+        exl3_module,
+        "_load_exl3_ext",
+        lambda: SimpleNamespace(exl3_moe_fused=object()),
+    )
+    monkeypatch.setattr(
+        method,
+        "_prepare_r7_b12x_weights",
+        lambda _layer, *, ignore_layer_budget: (
+            calls.append(ignore_layer_budget) or True
+        ),
+    )
+
+    method._prepare_r7_runtime(layer)
+
+    assert calls == [True]
+    assert layer.exl3_r7_fused is True
+
+
 def test_mixed_trellis_prefill_block_policy_rejects_unqualified_partition() -> None:
     common = {
         "configured_block_m": 64,

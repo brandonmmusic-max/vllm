@@ -2762,11 +2762,7 @@ class Exl3MoEMethod(FusedMoEMethodBase):
                     )
             print(chr(10).join(_out), flush=True)
         if getattr(layer, "exl3_r7_graph", False):
-            # Prefer the native two- or three-tier B12X mixed-Trellis kernel.
-            if _r7_fused_enabled() and self._prepare_r7_b12x_weights(layer):
-                layer.exl3_r7_fused = True
-                return
-            self._prepare_r7_graph_weights(layer)
+            self._prepare_r7_runtime(layer)
             return
         if _rs:
             self._prepare_rank_sliced_weights(layer)
@@ -2808,6 +2804,23 @@ class Exl3MoEMethod(FusedMoEMethodBase):
                         _MUL1_SENTINEL,
                         "mul1",
                     )
+
+    def _prepare_r7_runtime(self, layer: RoutedExperts) -> None:
+        """Select a graph-safe R7 execution path."""
+        ext_has_r7_graph = hasattr(_load_exl3_ext(), "exl3_moe_r7_fused")
+        require_b12x = not ext_has_r7_graph
+        if (require_b12x or _r7_fused_enabled()) and self._prepare_r7_b12x_weights(
+            layer,
+            ignore_layer_budget=require_b12x,
+        ):
+            layer.exl3_r7_fused = True
+            return
+        if require_b12x:
+            raise RuntimeError(
+                "R7 execution requires the B12X mixed-Trellis path when "
+                "exllamav3_ext does not export exl3_moe_r7_fused"
+            )
+        self._prepare_r7_graph_weights(layer)
 
     @classmethod
     def _shard_tensors_for_tensor_parallel(cls, layer: RoutedExperts) -> None:
@@ -3780,7 +3793,12 @@ class Exl3MoEMethod(FusedMoEMethodBase):
             for name, values in projections.items()
         }
 
-    def _prepare_r7_b12x_weights(self, layer: RoutedExperts) -> bool:
+    def _prepare_r7_b12x_weights(
+        self,
+        layer: RoutedExperts,
+        *,
+        ignore_layer_budget: bool = False,
+    ) -> bool:
         """Pack R7 experts into native B12X tier stacks."""
 
         split = self._r7_projection_tiers(layer)
@@ -3792,7 +3810,7 @@ class Exl3MoEMethod(FusedMoEMethodBase):
         # cap only; a non-negative value can deliberately retain the external
         # fallback after that many layers.
         budget = _r7_fused_layer_budget()
-        if budget is not None:
+        if budget is not None and not ignore_layer_budget:
             used = int(getattr(self.quant_config, "_r7_fused_layers", 0))
             if used >= budget:
                 return False
@@ -4143,7 +4161,7 @@ class Exl3MoEMethod(FusedMoEMethodBase):
             "tile_config": tile_config,
             "prefill_tile_config": prefill_tile_config,
         }
-        if budget is not None:
+        if budget is not None and not ignore_layer_budget:
             # Charged only now: this layer's tiers are frozen, so a failed
             # packing attempt cannot consume budget a later layer could use.
             self.quant_config._r7_fused_layers = (
