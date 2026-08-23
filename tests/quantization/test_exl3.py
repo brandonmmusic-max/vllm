@@ -1266,6 +1266,39 @@ def test_r7_without_dedicated_kernel_requires_unbudgeted_b12x(monkeypatch) -> No
     assert layer.exl3_r7_fused is True
 
 
+def test_r7_with_dedicated_kernel_defaults_to_projection_exact_path(
+    monkeypatch,
+) -> None:
+    method = object.__new__(Exl3MoEMethod)
+    layer = SimpleNamespace()
+    calls = []
+
+    monkeypatch.delenv("VLLM_EXL3_R7_FUSED", raising=False)
+    monkeypatch.setattr(
+        exl3_module,
+        "_load_exl3_ext",
+        lambda: SimpleNamespace(exl3_moe_r7_fused=object()),
+    )
+    monkeypatch.setattr(
+        method,
+        "_prepare_r7_b12x_weights",
+        lambda *_args, **_kwargs: calls.append("b12x") or True,
+    )
+    monkeypatch.setattr(
+        method,
+        "_prepare_r7_graph_weights",
+        lambda _layer: calls.append("dedicated"),
+    )
+
+    method._prepare_r7_runtime(layer)
+
+    assert calls == ["dedicated"]
+
+
+def test_exl3_fused_route_workspace_preserves_fp32_router_weights() -> None:
+    assert exl3_module._EXL3_ROUTE_WEIGHT_DTYPE is torch.float32
+
+
 def test_mixed_trellis_prefill_block_policy_rejects_unqualified_partition() -> None:
     common = {
         "configured_block_m": 64,

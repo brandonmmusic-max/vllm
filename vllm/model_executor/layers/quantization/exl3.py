@@ -112,6 +112,7 @@ _MIXED_TRELLIS_BUFFERS: dict[tuple[Any, ...], Any] = {}
 # The projection-wise mixed-bitrate fallback owns graph-stable runtime storage.
 _R7_GRAPH_RUNTIMES: dict[tuple[Any, ...], dict[str, Any]] = {}
 _NEXT_RUNTIME_SCOPE_ID = 0
+_EXL3_ROUTE_WEIGHT_DTYPE = torch.float32
 _MIXED_TRELLIS_ROUTE_BLOCK_SIZE = 8
 _GLM52_MIXED_TRELLIS_PREFILL_BLOCK_SIZE = 32
 _GLM52_MIXED_TRELLIS_BLOCK32_SIGNATURES = frozenset(
@@ -628,10 +629,14 @@ def _r7_ballast_view(planes: int, like: torch.Tensor) -> torch.Tensor:
 def _r7_fused_enabled() -> bool:
     """Return whether mixed-bitrate routed experts use fused B12X MoE.
 
-    ``VLLM_EXL3_R7_FUSED=0`` selects the projection-wise fallback.
+    The dedicated ``exl3_moe_r7_fused`` kernel preserves the checkpoint's
+    projection-wise K tables and is the correctness-first default when the
+    extension exports it. ``VLLM_EXL3_R7_FUSED=1`` explicitly opts into B12X
+    mixed-Trellis repacking; installations without the dedicated symbol still
+    require B12X in ``_prepare_r7_runtime``.
     """
 
-    return os.environ.get("VLLM_EXL3_R7_FUSED", "1") != "0"
+    return os.environ.get("VLLM_EXL3_R7_FUSED", "0") != "0"
 
 
 def _shared_mixed_buffers(
@@ -4289,7 +4294,13 @@ class Exl3MoEMethod(FusedMoEMethodBase):
                 route_capacity, dtype=torch.int64, device=x.device
             ),
             "weight_sorted": torch.empty(
-                route_capacity, dtype=torch.float16, device=x.device
+                # Preserve BF16x3/FP32 router probabilities through the fused
+                # expert scatter. The companion EXL3 ABI consumes FP32 sorted
+                # route weights; narrowing here caused a measurable cumulative
+                # logit-quality loss across the 78 routed layers.
+                route_capacity,
+                dtype=_EXL3_ROUTE_WEIGHT_DTYPE,
+                device=x.device,
             ),
         }
         _R7_GRAPH_RUNTIMES[key] = runtime
@@ -4592,7 +4603,7 @@ class Exl3MoEMethod(FusedMoEMethodBase):
             ),
             "weight_sorted": torch.empty(
                 parity_rows * topk,
-                dtype=torch.float16,
+                dtype=_EXL3_ROUTE_WEIGHT_DTYPE,
                 device=device,
             ),
             "flat_token": torch.arange(
