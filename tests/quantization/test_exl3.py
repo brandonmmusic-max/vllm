@@ -1295,8 +1295,9 @@ def test_r7_with_dedicated_kernel_defaults_to_projection_exact_path(
     assert calls == ["dedicated"]
 
 
-def test_exl3_fused_route_workspace_preserves_fp32_router_weights() -> None:
-    assert exl3_module._EXL3_ROUTE_WEIGHT_DTYPE is torch.float32
+def test_exl3_route_workspace_dtype_is_negotiated_by_abi() -> None:
+    assert exl3_module._EXL3_LEGACY_ROUTE_WEIGHT_DTYPE is torch.float16
+    assert exl3_module._EXL3_R7_ROUTE_WEIGHT_DTYPE is torch.float32
 
 
 def test_mixed_trellis_prefill_block_policy_rejects_unqualified_partition() -> None:
