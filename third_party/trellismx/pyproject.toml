@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trellismx-runtime"
+version = "0.1.0.dev1"
+description = "Experimental native E4M3 TrellisMX P8 runtime for Jovian"
+requires-python = ">=3.12"
+license = "LicenseRef-ShapleyMCG-1.0"
+license-files = ["LICENSE", "LICENSE.b12x", "LICENSE.exllamav3", "THIRD_PARTY_NOTICES.md"]
+dependencies = ["safetensors>=0.4", "torch==2.13.0", "nvidia-cutlass-dsl[cu13]==4.6.2"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["trellismx_runtime*", "trellismx_b12x*"]

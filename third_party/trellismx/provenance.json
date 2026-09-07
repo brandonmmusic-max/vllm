@@ -1,0 +1,400 @@
+{
+  "schema": "trellismx.runtime-source-port.v1",
+  "source_image": "verdictai/trellismx@sha256:609a5fc1cd7d994ba32d9c03626c414d315947eb9f13fab474a15bc8dfbe0129",
+  "source_b12x_base": "36bce2c1552ba2d47dc09f20a6f64fbfc8ec4ff8",
+  "source_vllm_base": "6dc2f516688fe6f84c6994dcd20fddf296853a6c",
+  "target_jovian_base": "9a6b4fb3a6f5598fd2fb68cf0de92bfe145294c1",
+  "transformation": "Replace the standalone b12x identifier with trellismx_b12x (including torch operator namespaces); change P8 sibling imports to relative imports; normalize trailing whitespace at EOF only. Preserve math, rates, scales and scheduling constants.",
+  "files": [
+    {
+      "path": "trellismx_b12x/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/__init__.py",
+      "source_sha256": "1a2c500fffb16f1fa94a458d4cde3602658b8975d0075c369ab97496c87ee6ab",
+      "sha256": "5d1f3cb6865531465f04b84c284f716ffb469755df6f8b1346a647e9d57fe82c"
+    },
+    {
+      "path": "trellismx_b12x/_lib/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/__init__.py",
+      "source_sha256": "bd6f8f4a0b0261c47788779104c21db1f6a1c7acf92297d7637dfe89370ce208",
+      "sha256": "68775a3b8b978e588413d7bf0b0f6b46cadc394c8bc1ae1dea89c6c74924f0ca"
+    },
+    {
+      "path": "trellismx_b12x/_lib/compiler.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/compiler.py",
+      "source_sha256": "420923f69637451067468ddf1a8589cd75267b0fbb4cd934d6b9424ac8bf0533",
+      "sha256": "a8e92f45274b3865cf5121af31b57890a1e3eab11c60423697a76f3839334a2c"
+    },
+    {
+      "path": "trellismx_b12x/_lib/dense_gemm.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/dense_gemm.py",
+      "source_sha256": "f2ee3ea1e9df850376f1f9e70329901824c9e9d49771a6857de98567c305a26e",
+      "sha256": "4e3f502e504fbaa93bc4c90f622e42c79b681eb33accfa0cd84a16723ca2acc1"
+    },
+    {
+      "path": "trellismx_b12x/_lib/dense_gemm_mxfp6.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/dense_gemm_mxfp6.py",
+      "source_sha256": "2a16f399049476f278df910c4ed7d3baf4357caf4c34662f3568cf179dda7001",
+      "sha256": "3f16b30db6ad875dd8fa8b7b1d079334915b16af24cd8303983d8e629f695e9f"
+    },
+    {
+      "path": "trellismx_b12x/_lib/fp6.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/fp6.py",
+      "source_sha256": "986f24c90f257d9ff9ebcb4debcf3d313e0fcec3a86b0300efe2c0ab008f2598",
+      "sha256": "db3627ab8bbc4bba2a6a56344728161b01e3dff3b0cc11b6fe75f288223a54d8"
+    },
+    {
+      "path": "trellismx_b12x/_lib/gating.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/gating.py",
+      "source_sha256": "5bc885d507a66d61df73fa5dcacea201499dc91b727a0cffa74227fb3613e1b4",
+      "sha256": "b4be0d6f072f707808ad6f03e005c42f56afbf5eeff0f0c7b1fc1d7e4125172e"
+    },
+    {
+      "path": "trellismx_b12x/_lib/intrinsics.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/intrinsics.py",
+      "source_sha256": "474bc49d45036ec023be18529bdc10ef3570227791fc6c050a7bca2acae8fa1f",
+      "sha256": "2a295eac4868a1a7c6f4f28c74ae70424d0eec45434f261510ae3a5bb0ef8694"
+    },
+    {
+      "path": "trellismx_b12x/_lib/meta.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/meta.py",
+      "source_sha256": "85b5ee925cd2d9a055c386141ab88cb6e119481be46a46c831f9d3c5d2098e6b",
+      "sha256": "c60926e146d4600d368f68276e9b8ed6d6ecaeb0dc8fdf1c374a9a1efbee6839"
+    },
+    {
+      "path": "trellismx_b12x/_lib/quant/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/quant/__init__.py",
+      "source_sha256": "bf66a3164d078ed176b08b0765a6ebb999f843c6c5bcac7fd6b6e6ae50310525",
+      "sha256": "bf66a3164d078ed176b08b0765a6ebb999f843c6c5bcac7fd6b6e6ae50310525"
+    },
+    {
+      "path": "trellismx_b12x/_lib/quant/sqg_e4m3.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/quant/sqg_e4m3.py",
+      "source_sha256": "9087a6332f6bced9361797a8624e947a4abd110aaf627a186919f9c3bf107694",
+      "sha256": "9087a6332f6bced9361797a8624e947a4abd110aaf627a186919f9c3bf107694"
+    },
+    {
+      "path": "trellismx_b12x/_lib/quant/sqg_fp16_d3l.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/quant/sqg_fp16_d3l.py",
+      "source_sha256": "ad2311c45bd5318737b9b73a8046178943609f5a11428f7c3d7ffd3d67335bdf",
+      "sha256": "ad2311c45bd5318737b9b73a8046178943609f5a11428f7c3d7ffd3d67335bdf"
+    },
+    {
+      "path": "trellismx_b12x/_lib/quant/x4t_scales.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/quant/x4t_scales.py",
+      "source_sha256": "0b3ab3370bca79f1b7bd28da228e4a51649673bbc3232f47486c67789633188d",
+      "sha256": "0768c6d79df3ea59dabce9d731c078a596d979b4cddcc956e58dc5db6eba8698"
+    },
+    {
+      "path": "trellismx_b12x/_lib/runtime_control.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/runtime_control.py",
+      "source_sha256": "db9655ad961af80bc9a7b1c72dd1d22fe2a8d49c7e11f0e8abdb281a7b92617c",
+      "sha256": "df4879b6a13e854664d8fcc47dea294ddfd50304a95dbb71900d96708afde790"
+    },
+    {
+      "path": "trellismx_b12x/_lib/runtime_patches.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/runtime_patches.py",
+      "source_sha256": "53ce88b19bbb049e4d328e18f3a181e96595dfffc23279b87819bab70f852a9a",
+      "sha256": "53ce88b19bbb049e4d328e18f3a181e96595dfffc23279b87819bab70f852a9a"
+    },
+    {
+      "path": "trellismx_b12x/_lib/scratch.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/scratch.py",
+      "source_sha256": "dbec8827bc4769d72a13e151ef076d86e1c7fa85a90994510d0491bf92545110",
+      "sha256": "dbec8827bc4769d72a13e151ef076d86e1c7fa85a90994510d0491bf92545110"
+    },
+    {
+      "path": "trellismx_b12x/_lib/smem.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/smem.py",
+      "source_sha256": "a5ea3a8925187ca5a9100c472ec59698bf801a18ac36672d5d11d9558a5aff4e",
+      "sha256": "a5ea3a8925187ca5a9100c472ec59698bf801a18ac36672d5d11d9558a5aff4e"
+    },
+    {
+      "path": "trellismx_b12x/_lib/utils.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/_lib/utils.py",
+      "source_sha256": "b72bb74c309357cb05b6d6ae012152c396fc51802316c25bdc2ffced0ff7a1dd",
+      "sha256": "2395fcfd24a6990b9c672dd4752b5b5d03832fb4759c72fa4012e856f9ea88ed"
+    },
+    {
+      "path": "trellismx_b12x/moe/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/__init__.py",
+      "source_sha256": "2c26f3dbaf9b6a8fd2971390e58e236554e2fdd21f8d6ee606e023de1029a99f",
+      "sha256": "59f069f6d34c76c8aaa10f26d7083fae0fe97117699310b0c2ddbb3f4cb5fe7b"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/__init__.py",
+      "source_sha256": "0f30da977628d1a031bcdf559c247fe5ee0ce01425a524b0dbf5dd399e23a378",
+      "sha256": "0f30da977628d1a031bcdf559c247fe5ee0ce01425a524b0dbf5dd399e23a378"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/btx_schema.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/btx_schema.py",
+      "source_sha256": "282190602b38c70a2085b40a9a2ef895ba6925c38725671cc99b0204d8d1bbdd",
+      "sha256": "ab4d4e0d6b49a7d217db0bc470166d704716adec5dedc2f47ceafb9b62ea460b"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/dynamic_launch_tuning.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/dynamic_launch_tuning.py",
+      "source_sha256": "2675e520d983ac54d3184c7e12690913d32dfead08c4e48fa12484161961e44e",
+      "sha256": "2675e520d983ac54d3184c7e12690913d32dfead08c4e48fa12484161961e44e"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/execution.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/execution.py",
+      "source_sha256": "e9d395871bd2ec4eae76b629c75ed38f10cc833a83d417bfc85e41af2431e63c",
+      "sha256": "eeaa44161dc3ade69cd1acde652f84197ae60e15033c0457cfae68397cddeac4"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/__init__.py",
+      "source_sha256": "138f7d07db901b511a820f981bb97041ad1bd646deec351893a0138aaed21301",
+      "sha256": "138f7d07db901b511a820f981bb97041ad1bd646deec351893a0138aaed21301"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/activations.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/activations.py",
+      "source_sha256": "2d29c84341fcaa2df7859ad6dbcfb16ac5e3b4e48d282cc9586bffb43e906676",
+      "sha256": "2d29c84341fcaa2df7859ad6dbcfb16ac5e3b4e48d282cc9586bffb43e906676"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/dynamic.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/dynamic.py",
+      "source_sha256": "1283909e371eace07784fd6f628ac83997377dba649a28b09e058a26dcac8b75",
+      "sha256": "ffff3410f16ec54da3ced5074f82a56558815ce9ff784eab25438d98c400d00d"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/micro.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/micro.py",
+      "source_sha256": "c455d86e5ef5abeb9efde991d6b44854c72e86c72d8e1f98966e0cc4f46106be",
+      "sha256": "22e648bad7f1f36280abee58389a7581eaa2856884e481122bdc6845b515398c"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/mxfp6_moe.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/mxfp6_moe.py",
+      "source_sha256": "4525eefb70abd2625605b14f90cc6f8036347e7d276c75790d3ae00dd703a811",
+      "sha256": "f677c6fc0b08c7d4e1d85a111f323150c431b944e2546e6eb4e9febfcdbd271e"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/p8_coupled_prefill_fc1.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/p8_coupled_prefill_fc1.py",
+      "source_sha256": "4ecd5edbabbd3b598f5f72d15d8fffc9619b97c57284892122481eea09903d95",
+      "sha256": "cb145ed5859fc823d6660388f20eb12feae6a79bfcd140d89dab56d20ea137d5"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/p8_coupled_prefill_fc2.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/p8_coupled_prefill_fc2.py",
+      "source_sha256": "2e7777e67d82be3d65ba6c8e35dec8a838e0491dea9ad63a19874d2e3c232fee",
+      "sha256": "fce4ff97ea5508ea2ee34f9bbe4b70554c41388b5bd9e38f246ae81da1f78c7f"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/p8_coupled_topk.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/p8_coupled_topk.py",
+      "source_sha256": "632a3bc4174440c04fb28e6dfcefc8876a16938738811c3487f47e6585c4706d",
+      "sha256": "e1ce87fd45d05124bc0d6412cf37164d8c379609847580861bc5e6b6312397b5"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/p8_h128_fc1.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/p8_h128_fc1.py",
+      "source_sha256": "a38691a411e98202eabb0d2ee0085aaa98ffc71b4b9eb63a628def064cbd291f",
+      "sha256": "738a4b12d120c8b519df6316c6edfdf31c3692835e1af30132423e5f71de660e"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/p8_narrow_fc1.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/p8_narrow_fc1.py",
+      "source_sha256": "8bfa5f4ad432fbfdeb3b9281b795f8e52540b16d8dccad9d8d6c9df67e91589f",
+      "sha256": "e833aa58e9417fb883ca31f89ba281222c51a2d94891837974b9c22eb116ae17"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/p8_small_m.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/p8_small_m.py",
+      "source_sha256": "8530dc32fb17ee1eaaf770810ce5999ecda0489b0bd2b04a5b7b8e8d749812cb",
+      "sha256": "dada8917856165648776f44d5a47c10b084f9ec9ac2dc2fb09f906896e6b76f8"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/reference.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/reference.py",
+      "source_sha256": "d3e6e44ebba3e7c9566a6e6f76b982324713528f95cf96303aa3d2c73af866c1",
+      "sha256": "56a45192e8569bb5259cfb56be09ac7e0f81c97f099e0719d1f51391fb6823f5"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/relu2.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/relu2.py",
+      "source_sha256": "d81c98d9a30b28ec2b94637b6132fd7aa499d5053760d26a697c4d6998ad0f87",
+      "sha256": "c10f0ec53da415c0df299d633129d745cbf17911244b3e5d180c913f13a0bc22"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/silu.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/silu.py",
+      "source_sha256": "abb74591a75307180761af3b71232412c40b8bf50d94a44f57b2f87e0e0ba2f5",
+      "sha256": "7eab452566ef98bc6a63446ce0e1a47f36a687b4cefb1fd1387090856e092c32"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/situ.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/situ.py",
+      "source_sha256": "59c0d60f9ea3b06ec684f9448e20560733373308c716938fc1ecd581bd7a60b5",
+      "sha256": "3bfef110b9caa508dd201f64b5837a98aacebc9d05a5d9ad7c26858d04dd7666"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/tiny_decode.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/tiny_decode.py",
+      "source_sha256": "39893d9c8241136cd92a197358d721448e0a12846cb6c72327c5e663b96df3db",
+      "sha256": "294f6506cd8404cd8b8baccda7c1b4c0de79f8d10c5bd8f7f522e5d17dc6d00a"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/trellis_ring.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/trellis_ring.py",
+      "source_sha256": "4385a837d37f766797ca70c69b613bbb4781e99fa8f3ebf1058ef18cca20b811",
+      "sha256": "4385a837d37f766797ca70c69b613bbb4781e99fa8f3ebf1058ef18cca20b811"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a16/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a16/__init__.py",
+      "source_sha256": "3c012619efbf7c533501e7048bd9b3c6ac321859904f7a07b849631b86350357",
+      "sha256": "3c012619efbf7c533501e7048bd9b3c6ac321859904f7a07b849631b86350357"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a16/btx.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a16/btx.py",
+      "source_sha256": "d6b241b59b29265235914e1be955607b3e9b0cd83a40f72a40350455adf927bd",
+      "sha256": "6a514070afec658d2a21941fef5ad19cf9a55c0dabba0b7024b5c50c109f1841"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a16/host.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a16/host.py",
+      "source_sha256": "69bc0b31df3da4063d650ed1bd44922d4933c5e54629fe84958d5368cc31c224",
+      "sha256": "a68f22b6f5f68071837c9306b38381d166817a6a38746e6f5e9c970679970407"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a16/kernel.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a16/kernel.py",
+      "source_sha256": "28e6a2ca95934921718f75f8cf575be034c23da78776b40d478bef6bf8b0b3cd",
+      "sha256": "0c3ae2f759446677d91aa925ca1978964dd590528483d7823a85fc8f51dbba58"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a16/prepare.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a16/prepare.py",
+      "source_sha256": "b7636111082af0244243681ae770e53f7954a3e16433c9e844e39a4199f38e69",
+      "sha256": "2733cf24bf7e90b8dabce86640effdf80e5fd771103c8fe2ec14d8061d8d1ac4"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a16/route_pack.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a16/route_pack.py",
+      "source_sha256": "6fab8230d72e664415f1242d975de342d40b642173fa395b16e4ccb29d2b69f6",
+      "sha256": "ba146014aa1d59057c3df3429f4ce2852b8a77bf16d16caeb93156fa3887b5ff"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a8_mcg_decode.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a8_mcg_decode.py",
+      "source_sha256": "6b3da77a56f9062b6735cd44024e2af96f0ef34c959f558189a5008ecf8f6e99",
+      "sha256": "bc6dfb7d5fa85e8f1f9ef48a420db3e9e65e17346f92e2573e4a3753c1bff06e"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a8_phase1.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a8_phase1.py",
+      "source_sha256": "7222df68bb6ad7ec5ca69cf7c4ffd5c3d6b1ddc240e6375c4b1e77bcc151909c",
+      "sha256": "13973c98fd78fea0f0bf729f90b4a0b96f4c88b74721f41e8f427411f734d943"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a8_phase2.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a8_phase2.py",
+      "source_sha256": "be317f7f76153ff5f60d2d1cb76f15dae14e6252a109b2d448e7dd8852f66194",
+      "sha256": "58b790164f3d82e97ef0487559d7b2320be0d38749c969686913f43780f99add"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w4a8_trellis_decode.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w4a8_trellis_decode.py",
+      "source_sha256": "b4b12abcebdd5c794ad20360c9da46f47e69cc8efee92a7f6c3ee7487cbd6437",
+      "sha256": "b14dee0476ffe9d1a27b3aa31bd021a8ca51751c9663c8432a2f1553deef5d22"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w6a8/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w6a8/__init__.py",
+      "source_sha256": "363cf5716975a1747014e7750bd90292f45879620dc3f9d10c9fd9120a1d812e",
+      "sha256": "363cf5716975a1747014e7750bd90292f45879620dc3f9d10c9fd9120a1d812e"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/kernels/w6a8/weights.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/kernels/w6a8/weights.py",
+      "source_sha256": "e1883a2625d2e7cf59d31f357676d598858086b14f63e6719e98546823eb0756",
+      "sha256": "195af2c52870d12abb0b2711769f45061d9f57d5e7eac3b9fe4afda73244264d"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/routing.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/routing.py",
+      "source_sha256": "13c5a01a6f7631c2c98c11ff6122bf88b2b4edf292c1fa4bb1df7a71eeb45f80",
+      "sha256": "13c5a01a6f7631c2c98c11ff6122bf88b2b4edf292c1fa4bb1df7a71eeb45f80"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/trellis_codebooks.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/trellis_codebooks.py",
+      "source_sha256": "f6f2b849d8685f279f63eaa6b60e943dbb459cfa6de6b1fad80c3fdcc2f9c0be",
+      "sha256": "f6f2b849d8685f279f63eaa6b60e943dbb459cfa6de6b1fad80c3fdcc2f9c0be"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/tuning/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/tuning/__init__.py",
+      "source_sha256": "efc68e246e42a25641de621a5b6867996ad89689015590cce3636080ca0a8040",
+      "sha256": "efc68e246e42a25641de621a5b6867996ad89689015590cce3636080ca0a8040"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/tuning/registry.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/tuning/registry.py",
+      "source_sha256": "fdfef846b025284d40fc738160fc165fbc6d291c2c05b98500987922a5f6c83b",
+      "sha256": "fdfef846b025284d40fc738160fc165fbc6d291c2c05b98500987922a5f6c83b"
+    },
+    {
+      "path": "trellismx_b12x/moe/fused_moe/__init__.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/fused_moe/__init__.py",
+      "source_sha256": "e90b3866939bc9eeb588a6ddfbea4bf0d5d901cc1f230f673e1b9ed3212281d6",
+      "sha256": "74bf1b5143f8ee60855328c5510fd6b8056c51ca26d916b393d6c62a67892e73"
+    },
+    {
+      "path": "trellismx_b12x/moe/fused_moe/_btx_adoption.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/fused_moe/_btx_adoption.py",
+      "source_sha256": "d0478f52b37e4606fe50f001231e1f46a5672c881eb79578d4e111d5428d20dc",
+      "sha256": "22d250ae07d12ad6195490fc53ca0c10a3386dd31634d226f665237a5e6c5e24"
+    },
+    {
+      "path": "trellismx_b12x/moe/fused_moe/_impl.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/fused_moe/_impl.py",
+      "source_sha256": "bc08e69ba855307000608d57eb64dc066c73330e797b4083195b2f4241da1309",
+      "sha256": "771fe84659fc4f89cfb3b02fa375af8c1dc1f0a7d5701d7abb424320b6d74e39"
+    },
+    {
+      "path": "trellismx_b12x/moe/fused_moe/api.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/fused_moe/api.py",
+      "source_sha256": "2097654986b70e80698cdd4bb69bafcfa136b57361074bba4741b09ec3e3d010",
+      "sha256": "2097654986b70e80698cdd4bb69bafcfa136b57361074bba4741b09ec3e3d010"
+    },
+    {
+      "path": "trellismx_runtime/p8_coupled_scales.py",
+      "source_path": "/opt/p8-coupled-runtime/p8_coupled_scales.py",
+      "source_sha256": "5e9220740c30bfbcb47ab0ea0857f820562b95e6a0797ff0fb0868eb6f84a0f2",
+      "sha256": "5e9220740c30bfbcb47ab0ea0857f820562b95e6a0797ff0fb0868eb6f84a0f2"
+    },
+    {
+      "path": "trellismx_runtime/p8_multirow_scratch.py",
+      "source_path": "/opt/p8-coupled-runtime/p8_multirow_scratch.py",
+      "source_sha256": "c957986d0d0434a380a14c598695ee01a3274a20ec191ea1c885e48f496af4f7",
+      "sha256": "35f08420a3ad15b6bc27afe6cb048fbb8657b63502a150922aed1f710792de41"
+    },
+    {
+      "path": "trellismx_runtime/p8_native_kernel.py",
+      "source_path": "/opt/p8-coupled-runtime/p8_native_kernel.py",
+      "source_sha256": "dbc4cb653b4b139829709eb763652d38942945946ae1a19041f53dbe07a45bdc",
+      "sha256": "bf46f80862145339a367ec7a2b76379fe3afd179ec3f1fa28682880bcc8ed805"
+    },
+    {
+      "path": "trellismx_runtime/p8_smallm_schedule.py",
+      "source_path": "/opt/p8-coupled-runtime/p8_smallm_schedule.py",
+      "source_sha256": "b5d56e800c7760269608b34fa06533181d9b431aeab535e644a4d5e4620b66e2",
+      "sha256": "b5d56e800c7760269608b34fa06533181d9b431aeab535e644a4d5e4620b66e2"
+    },
+    {
+      "path": "trellismx_b12x/moe/_shared/tuning/decode_max_active_clusters.py",
+      "source_path": "/opt/infernal-invocation/b12x/b12x/moe/_shared/tuning/decode_max_active_clusters.py",
+      "source_sha256": "26afcd57a406bdb9c753375f5daba19d7d4d5c3679221e8c5aa48a54a9e41222",
+      "sha256": "26afcd57a406bdb9c753375f5daba19d7d4d5c3679221e8c5aa48a54a9e41222"
+    }
+  ]
+}
