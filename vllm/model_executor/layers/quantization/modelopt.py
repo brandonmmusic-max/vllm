@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
+import os
 from fnmatch import fnmatch
 from typing import TYPE_CHECKING, Any, cast
 
@@ -177,6 +178,14 @@ class ModelOptQuantConfigBase(QuantizationConfig):
     def get_quant_method(
         self, layer: torch.nn.Module, prefix: str
     ) -> "QuantizeMethodBase | None":
+        if isinstance(layer, RoutedExperts) and os.environ.get(
+            "VLLM_TRELLISMX_CHECKPOINT"
+        ):
+            from .trellismx import maybe_trellismx_method
+
+            method = maybe_trellismx_method(self, layer, prefix)
+            if method is not None:
+                return method
         # handle kv-cache first so we can focus only on weight quantization thereafter
         if isinstance(layer, (Attention, MLAAttention)):
             return self.KVCacheMethodCls(self)
@@ -2387,12 +2396,34 @@ class ModelOptMixedPrecisionConfig(ModelOptQuantConfigBase):
                 "language_model.model." + prefix[len("model.language_model.") :]
             )
 
+        # The GLM text-only MTP tower is outside the multimodal wrapper.
+        # Keep this alias opt-in until its wider ModelOpt impact is evaluated.
+        if os.environ.get("VLLM_TRELLISMX_CHECKPOINT"):
+            import regex as re
+
+            match = re.fullmatch(r"model\.layers\.(\d+)\.(?:mtp_block\.)?(.+)", prefix)
+            if match:
+                candidates.append(f"model.language_model.layers.{match[1]}.{match[2]}")
+
         return tuple(dict.fromkeys(candidates))
 
     def get_quant_method(
         self, layer: torch.nn.Module, prefix: str
     ) -> "QuantizeMethodBase | None":
         """Return quantize-method based on layer."""
+        if isinstance(layer, RoutedExperts) and os.environ.get(
+            "VLLM_TRELLISMX_CHECKPOINT"
+        ):
+            from .trellismx import maybe_trellismx_method
+
+            config = (
+                self.nvfp4_config
+                if self._resolve_quant_algo(prefix) == "NVFP4"
+                else self
+            )
+            method = maybe_trellismx_method(config, layer, prefix)
+            if method is not None:
+                return method
         # KV-cache quantization
         if isinstance(layer, Attention):
             if self.kv_cache_quant_method:
