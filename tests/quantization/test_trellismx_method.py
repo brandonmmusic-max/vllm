@@ -135,12 +135,11 @@ def test_missing_runtime_cannot_serve_carrier(method_inputs):
 
 
 def test_native_runtime_operator_namespace_matches_calls():
-    from trellismx_runtime import p8_native_kernel
+    from b12x.moe._shared.trellismx import p8_native_kernel
 
     assert p8_native_kernel.P8NativeTPMoE is not None
-    assert hasattr(torch.ops.trellismx_b12x, "dense_gemm_launch")
-    assert hasattr(torch.ops.trellismx_b12x, "tp_moe_dynamic_launch")
-    assert not hasattr(torch.ops.trellismx_trellismx_b12x, "dense_gemm_launch")
+    assert hasattr(torch.ops.b12x, "dense_gemm_launch")
+    assert hasattr(torch.ops.b12x, "tp_moe_dynamic_launch")
 
 
 def test_warmup_covers_decode_verification_and_prefill_without_dedup(method_inputs):

@@ -3,10 +3,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 root=$PWD
+b12x_source=${B12X_SOURCE:?Set B12X_SOURCE to the companion B12X review checkout}
+expected=fc9bd550d4dd008ab53aa7810578cdf16a55c39e
+test "$(git -C "$b12x_source" rev-parse HEAD)" = "$expected"
+git -C "$b12x_source" diff --quiet HEAD -- b12x
 image=verdictai/trellismx@sha256:609a5fc1cd7d994ba32d9c03626c414d315947eb9f13fab474a15bc8dfbe0129
 docker run --rm --network none --entrypoint /opt/venv/bin/python \
   -e PYTHONPATH=/jj:/review \
-  -v "$root:/jj:ro" -v "$root/third_party/trellismx:/review:ro" -w /jj \
+  -v "$root:/jj:ro" -v "$b12x_source:/review:ro" -w /jj \
   "$image" -S -c '
 import site
 for path in ["/usr/local/lib/python3.12/dist-packages", "/usr/lib/python3/dist-packages", "/opt/venv/lib/python3.12/site-packages"]:

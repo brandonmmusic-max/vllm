@@ -92,7 +92,7 @@ class TrellisMXMoEMethod(ModelOptNvFp4FusedMoE):
     def process_weights_after_loading(self, layer):
         if self.runtime is not None:
             raise RuntimeError("TrellisMX hot weight replacement is unsupported")
-        from trellismx_runtime.p8_native_kernel import P8NativeTPMoE
+        from b12x.moe._shared.trellismx.p8_native_kernel import P8NativeTPMoE
 
         device = layer.w13_weight.device
         if device.type != "cuda" or torch.cuda.get_device_capability(device) != (12, 0):

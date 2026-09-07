@@ -14,10 +14,9 @@ services, clocks or GPU jobs are changed by preparing this PR.
   warmup provider. There is no process-wide class/factory monkey patch.
 - `modelopt.py`: explicit opt-in selection plus the text-only GLM MTP name
   alias. Dense, attention, shared experts, router and MTP stay with ModelOpt.
-- `third_party/trellismx`: separately licensed, reviewable native P8 kernels
-  and their dependency closure, with source identities. No encoder is needed
-  or included here. The old P8 B12X dependency is isolated as
-  `trellismx_b12x`; it does not replace Jovian's `b12x` attention/collectives.
+- Companion B12X fork: native P8 kernels, coupled transforms and internal
+  runtime. JJ imports `b12x.moe._shared.trellismx`; no kernel dependency tree
+  is vendored here. No encoder is needed or included.
 - `tests/quantization/test_trellismx_*.py`: CPU manifest, loader and dispatch
   tests. Native runtime launches are not emulated as evidence of GPU closure.
 - This directory: source-build Docker recipe, Compose and `serve.sh`.
@@ -49,10 +48,11 @@ docker compose -f examples/trellismx/compose.yaml up
 
 The build is expensive and has **not been executed end-to-end for this PR**.
 It uses the repository's normal Docker build rather than overlaying latest
-Python on RC5's old native extensions. The addon pins current B12X source
-`6483963275dcf32eb2eec6d100e644d1ea647ed6` for Jovian attention and PCIe;
-its exact serving compatibility still needs device validation. The separate
-P8 kernel closure comes from the recorded working RC5 image.
+Python on RC5's old native extensions. The addon pins the companion B12X fork
+at `fc9bd550d4dd008ab53aa7810578cdf16a55c39e`, based on current B12X
+`6483963275dcf32eb2eec6d100e644d1ea647ed6`. P8, attention and PCIe now use
+one B12X installation. Their combined serving compatibility needs device
+validation; RC5 measurements do not qualify this source reconciliation.
 
 The default recipe requests TP4/DCP1, MTP3, BF16 external activations with
 native E4M3 P8 internal activations, B12X_MLA_SPARSE, NVFP4 MLA KV, graphs,
@@ -97,8 +97,8 @@ include the historical KLD protocol: teacher-to-student KL, CPU FP64,
 
 ## Validation required before promotion
 
-1. Build this exact branch's native vLLM image and import both isolated P8 and
-   current B12X; verify the new image's commit and dependency identities.
+1. Build this exact branch's native vLLM image and import the companion B12X
+   P8 implementation; verify the image's commit and dependency identities.
 2. Device closure at both K4 and K5, small-M/MTP and grouped prefill, five-run
    determinism, and native decoder/reference agreement. Keep documented GEMM
    rounding tolerances; do not weaken them to get a pass.
@@ -112,12 +112,14 @@ include the historical KLD protocol: teacher-to-student KL, CPU FP64,
 
 ## Attribution and overlap
 
-The adapter/glue uses the vLLM Apache-2.0 convention. The imported P8 kernel
-code retains SHAPLEYMCG and third-party licenses under its separate package;
+The adapter/glue uses the vLLM Apache-2.0 convention. The companion P8 kernel
+code retains SHAPLEYMCG and third-party licenses in the B12X fork;
 it is **not implicitly relicensed Apache-2.0**. Upstream inclusion requires a
 maintainer decision about that boundary. Attribution: Brandon M. Music,
 Z.ai, vLLM, Local Inference Lab/B12X, ExLlamaV3, KQuant, QSRT and
-`w4a8_trellis`; see the vendored notices and provenance manifest.
+`w4a8_trellis`; see that fork's `licenses/trellismx/` and
+`docs/trellismx-review.md`. The full historical source bundle remains in
+commit `8433d53c19bce3462a2a68f95a315e1a3e3e55bb`, not in this PR's net diff.
 
 EXL3 [PR 562](https://github.com/local-inference-lab/vllm/pull/562) is related
 Jovian work, not this native P8 path. Coupled QSRT

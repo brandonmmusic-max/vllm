@@ -9,22 +9,22 @@ No GPUs, production services or clocks were used or changed.
 | --- | --- | --- |
 | CPU manifest and actual Jovian method tests | 29 passed | CUDA launches replaced by recorder in method tests; manifest fixtures use tiny headers |
 | Real checkpoint inventory | 168/168 passed | Actual file sizes, K4/K5 header metadata and source-design allowlist; no new full payload hash pass |
-| P8 source provenance | 65 file hashes verified | Reviewable source dependency closure, including dynamically discovered tuning profile |
-| Imported-source equivalence | 65/65 passed | Compared to original sources after only namespace/sibling-import and EOF normalization; no numerical or scheduling edits |
-| Native P8 and Jovian adapter imports | Passed | CPU-only RC5 dependency container, mounted current Jovian Python source; no current extension binaries |
-| CUTLASS DSL 4.6.2 imports | Passed | Explicit isolated installation; both distribution version and imported module location asserted |
-| Runtime Python wheel | Built successfully | `trellismx_runtime-0.1.0.dev1-py3-none-any.whl`; not GPU compilation |
-| Ruff, shell syntax, Compose schema | Passed | Integration source and serving scripts; imported kernel source preserved rather than reformatted |
-| Applicable repository pre-commit checks | Passed | Includes Ruff, mypy, typos, markdown, shellcheck, SPDX and forbidden-import checks; unrelated hooks skipped by file selection |
+| Companion B12X P8 and Jovian imports | Passed after dependency split | CPU-only dependency container, current source at pinned B12X fork revision; no current vLLM native extension build |
+| B12X rate/law, scratch and ownership contracts | 14 passed | CPU constructors and geometry only, not decoder/MMA device closure |
+
+The 29 loader tests were rerun after switching to the companion B12X fork:
+29 passed with 15 warnings (missing source-tree version metadata and Torch
+deprecations). Earlier 65-file hash checks and isolated runtime wheel builds
+applied to the superseded bundled draft, not this dependency-split version.
+The earlier real-checkpoint inventory check remains header-only evidence.
 
 Reproduce CPU loader and source checks from the PR checkout:
 
 ```bash
-bash examples/trellismx/check_cpu.sh
+B12X_SOURCE=/absolute/path/to/companion-b12x bash examples/trellismx/check_cpu.sh
 bash -n examples/trellismx/{build,serve,check_cpu}.sh
 MODEL_ROOT=/model P8_CHECKPOINT_ROOT=/checkpoint \
   docker compose -f examples/trellismx/compose.yaml config --quiet
-uv build --wheel --out-dir /tmp/trellismx-runtime-wheels third_party/trellismx
 ```
 
 The CPU container does not execute its legacy `sitecustomize` bootstrap:
@@ -36,8 +36,9 @@ represented as a successfully built Jovian engine. Torch is 2.13.0.
 The first carrier-weight fixture failed because its CPU process had no TP
 group. The corrected fixture substitutes rank/world-size accessors only,
 then executes the real inherited ModelOpt allocation implementation. A
-mechanical namespace pass initially duplicated a torch-op namespace prefix;
-that was fixed and has an explicit operator-registration regression test.
+mechanical namespace pass initially duplicated a torch-op namespace prefix.
+The split eliminates the isolated namespace; the regression test now checks
+that P8 uses the existing `torch.ops.b12x` registrations.
 
 ## Not tested — promotion blockers
 
