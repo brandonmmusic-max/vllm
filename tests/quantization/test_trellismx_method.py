@@ -100,6 +100,163 @@ def test_inherits_real_modelopt_carrier_weight_loader_shapes(
     assert method.uses_weight_scale_2_pattern()
 
 
+def test_subclass_retains_exact_modelopt_scale_loader_semantics(method_inputs):
+    """A non-``ModelOpt`` class name must not lose carrier-loader dispatch."""
+    config, moe = method_inputs
+    method = trellismx.TrellisMXMoEMethod(config, moe, "/fixture", 3)
+    assert method.uses_modelopt_carrier_weight_loader()
+
+    routed = RoutedExperts.__new__(RoutedExperts)
+    routed.quant_config = None
+    routed.quant_method = method
+    routed.moe_config = moe
+    routed.expert_map_manager = SimpleNamespace(
+        map_global_to_local=lambda expert_id: expert_id
+    )
+
+    per_tensor = torch.full((1, 2), float("nan"))
+    assert routed.weight_loader(
+        per_tensor,
+        torch.tensor(7.0),
+        "w1_weight_scale_2",
+        "w1",
+        0,
+        return_success=True,
+    )
+    assert per_tensor[0, 0] == 7.0
+    assert torch.isnan(per_tensor[0, 1])
+
+    assert routed.weight_loader(
+        per_tensor,
+        torch.tensor(11.0),
+        "w3_weight_scale_2",
+        "w3",
+        0,
+        return_success=True,
+    )
+    assert per_tensor[0, 1] == 11.0
+
+    input_scale = torch.full((1, 2), float("nan"))
+    assert routed.weight_loader(
+        input_scale,
+        torch.tensor(13.0),
+        "w1_input_scale",
+        "w1",
+        0,
+        return_success=True,
+    )
+    assert input_scale[0, 0] == 13.0
+    assert torch.isnan(input_scale[0, 1])
+    assert routed.weight_loader(
+        input_scale,
+        torch.tensor(17.0),
+        "w3_input_scale",
+        "w3",
+        0,
+        return_success=True,
+    )
+    assert input_scale[0, 1] == 17.0
+
+    # ModelOpt's combined w13 block-scale layout is TP-sliced across the fused
+    # intermediate dimension. Force rank 1/2 and verify it receives the second
+    # half rather than broadcasting a scalar or overwriting the whole tensor.
+    moe.tp_rank = 1
+    moe.tp_size = 2
+    block_param = torch.nn.Parameter(
+        torch.full((1, 4, 2), float("nan"), dtype=torch.float32)
+    )
+    block_param.quant_method = "block"
+    combined = torch.arange(16, dtype=torch.float32).reshape(1, 8, 2)
+    assert routed.weight_loader(
+        block_param,
+        combined,
+        "w13_weight_scale",
+        "w1",
+        0,
+        return_success=True,
+    )
+    torch.testing.assert_close(block_param.data[0], combined[0, 4:8])
+
+
+def test_process_weights_after_loading_builds_native_sidecar(
+    method_inputs, monkeypatch
+):
+    from b12x.moe._shared.trellismx import p8_native_kernel
+
+    real_empty = torch.empty
+    calls = []
+    sidecar = object()
+    runtime = SimpleNamespace(device=object())
+
+    class Recorder:
+        def __call__(self, *args, **kwargs):
+            calls.append((args, kwargs))
+            return runtime
+
+    monkeypatch.setattr(p8_native_kernel, "P8NativeTPMoE", Recorder())
+    monkeypatch.setattr(
+        trellismx.torch.cuda, "get_device_capability", lambda _: (12, 0)
+    )
+    monkeypatch.setattr(
+        trellismx.torch,
+        "empty",
+        lambda *args, **kwargs: real_empty(0),
+    )
+
+    config, moe = method_inputs
+    method = trellismx.TrellisMXMoEMethod(config, moe, "/fixture", 3)
+    method.overlay = SimpleNamespace(
+        sidecar=lambda layer, rank: sidecar,
+        records={(3, 0): {"source_design_sha256": "design", "bits": 5}},
+        transform_hash="transform",
+    )
+    fake_cuda = SimpleNamespace(type="cuda")
+    layer = SimpleNamespace(
+        **{
+            name: SimpleNamespace(
+                device=fake_cuda,
+                dtype=torch.float32,
+                numel=lambda: 2,
+                element_size=lambda: 4,
+            )
+            for name in (
+                "w13_weight",
+                "w2_weight",
+                "w13_weight_scale",
+                "w2_weight_scale",
+                "w13_weight_scale_2",
+                "w2_weight_scale_2",
+                "w13_input_scale",
+                "w2_input_scale",
+            )
+        }
+    )
+    method.process_weights_after_loading(layer)
+
+    assert len(calls) == 1
+    args, kwargs = calls[0]
+    assert args == (sidecar,)
+    assert kwargs["tp_rank"] == 0
+    assert kwargs["layer"] == 3
+    assert kwargs["expected_design_sha256"] == "design"
+    assert kwargs["expected_transform_sha256"] == "transform"
+    assert method.runtime is runtime
+    assert layer.b12x_warmup_provider is method
+    for name in (
+        "w13_weight",
+        "w2_weight",
+        "w13_weight_scale",
+        "w2_weight_scale",
+        "w13_weight_scale_2",
+        "w2_weight_scale_2",
+        "w13_input_scale",
+        "w2_input_scale",
+    ):
+        value = getattr(layer, name)
+        assert isinstance(value, torch.nn.Parameter)
+        assert value.numel() == 0
+
+
 def test_dispatch_passes_only_routed_input_and_routes(method_inputs):
     config, moe = method_inputs
     method = trellismx.TrellisMXMoEMethod(config, moe, "/fixture", 3)

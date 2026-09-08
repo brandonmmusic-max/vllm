@@ -1432,6 +1432,15 @@ class ModelOptNvFp4FusedMoE(FusedMoEMethodBase):
         """
         return True
 
+    def uses_modelopt_carrier_weight_loader(self) -> bool:
+        """
+        Declare that ``RoutedExperts.weight_loader`` owns this carrier ABI.
+
+        Execution subclasses may replace the routed-expert kernel while keeping
+        ModelOpt's checkpoint layout and sharding semantics.
+        """
+        return True
+
     def create_weights(
         self,
         layer: RoutedExperts,
