@@ -51,3 +51,28 @@ that P8 uses the existing `torch.ops.b12x` registrations.
 
 Historical campaign KLD and RC5 benchmarks in README are not substituted for
 any missing test above. This draft is code for review, not a production image.
+
+## September 8 runtime evidence and overlay review
+
+See the [four-row KLD matrix and overlay reconciliation](evidence-r27-20260908/README.md).
+The historical FP8/DCP1 score is0.0318077613; historical NVFP4/DCP1 is0.0341811459.
+Current r27 DCP4 scores are0.0350078183 (NVFP4) and0.0310574767 (FP8).
+These are external measured-image references, not GPU qualification of this PR head.
+
+Focused CPU checks after this review:31 loader/method tests passed;38 DCP tests
+passed with21 GPU tests skipped;14 B12X contract tests passed.
+
+Reproduce the September 8 CPU checks with the updated companion commit:
+
+```bash
+B12X_SOURCE=/absolute/path/to/companion-b12x bash examples/trellismx/check_cpu_r27.sh
+```
+
+The harness uses uv to create a disposable virtual environment in the pinned
+r27 dependency image, mounts both checkouts read-only, exposes no GPUs, and
+disables network access. The original `check_cpu.sh` uses the older dependency
+image and is a separate check. Run the external-receipt checker separately:
+
+```bash
+.venv/bin/python examples/trellismx/evidence-r27-20260908/verify_evidence.py examples/trellismx/evidence-r27-20260908
+```

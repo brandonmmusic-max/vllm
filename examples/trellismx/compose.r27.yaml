@@ -1,0 +1,39 @@
+services:
+  trellismx:
+    image: verdictai/trellismx:glm53-flash-p8-r27-dcp4-20260908@sha256:1c8a10d2b21bd6ed5a7ca4a29bcc3900d29acc3ce42e1d722b9ebaa74357de3f
+    restart: "no"
+    network_mode: host
+    ipc: host
+    gpus: all
+    working_dir: /
+    entrypoint: ["/bin/bash", "/opt/trellismx/serve.sh"]
+    environment:
+      PORT: "8000"
+      SERVED_MODEL_NAME: "glm53-flash-trellismx-p8-k45"
+      MODEL_ROOT: "/model"
+      VLLM_TRELLISMX_CHECKPOINT: "/checkpoint"
+      TP: "4"
+      DCP: "4"
+      CACHE_MODE: "vram"
+      SPECULATOR: "mtp"
+      NUM_SPECULATIVE_TOKENS: "3"
+      KV_CACHE_DTYPE: "nvfp4_ds_mla"
+      MAX_MODEL_LEN: "1000000"
+      MAX_NUM_SEQS: "16"
+      MAX_NUM_BATCHED_TOKENS: "4096"
+      GPU_MEMORY_UTILIZATION: "0.97"
+      CP_KV_CACHE_INTERLEAVE_SIZE: "4"
+      DCP_CKV_GATHER: "auto"
+      VLLM_NO_USAGE_STATS: "1"
+    volumes:
+      - ${MODEL_ROOT:?Set MODEL_ROOT to the pinned carrier directory}:/model:ro
+      - ${TRELLISMX_ROOT:-.}:/checkpoint:ro
+      - trellismx-r27-jit:/cache/jit
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8000/health >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30m
+      retries: 10
+volumes:
+  trellismx-r27-jit: {}

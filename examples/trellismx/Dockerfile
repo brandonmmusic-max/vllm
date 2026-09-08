@@ -3,6 +3,6 @@
 ARG JOVIAN_IMAGE
 FROM ${JOVIAN_IMAGE}
 RUN uv pip install --system --no-deps \
-      "b12x @ https://github.com/brandonmmusic-max/b12x/archive/fc9bd550d4dd008ab53aa7810578cdf16a55c39e.tar.gz"
+      "b12x @ https://github.com/brandonmmusic-max/b12x/archive/51dcc6892f421a71585a2b60d777998f09e85a81.tar.gz"
 COPY examples/trellismx/serve.sh /opt/trellismx/serve.sh
 ENTRYPOINT ["/bin/bash", "/opt/trellismx/serve.sh"]
