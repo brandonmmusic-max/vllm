@@ -49,7 +49,7 @@ docker compose -f examples/trellismx/compose.yaml up
 The build is expensive and has **not been executed end-to-end for this PR**.
 It uses the repository's normal Docker build rather than overlaying latest
 Python on RC5's old native extensions. The addon pins the companion B12X fork
-at `ac8ef2ca23ab1f5bb45a94976b36a3ded0006bf1`, based on current B12X
+at `36d5d55a9da264e35049b242e489ef320304919c`, based on current B12X
 `6483963275dcf32eb2eec6d100e644d1ea647ed6`. P8, attention and PCIe now use
 one B12X installation. Their combined serving compatibility needs device
 validation; RC5 measurements do not qualify this source reconciliation.
@@ -138,3 +138,28 @@ These are external measured-image references, not GPU qualification of this PR h
 
 Focused CPU checks after this review:31 loader/method tests passed;38 DCP tests
 passed with21 GPU tests skipped;14 B12X contract tests passed.
+
+## Explicit r27 source-build launcher
+
+`Dockerfile` keeps the default DCP1 source recipe above. Its named `r27` target
+instead installs `serve-r27.sh` as `/opt/trellismx/serve.sh`, enforcing TP4/DCP4
+before delegating backend/cache/scheduler selection to
+`/usr/local/bin/serve-glm53-flash.sh`. The supplied core image must contain that
+r27 backend launcher and matching Python/native extensions. This target is not
+an upgrade of an older core image.
+
+```bash
+docker build -f examples/trellismx/Dockerfile --target r27 \
+  --build-arg JOVIAN_IMAGE=your-matching-r27-core-image \
+  -t local/trellismx-r27:review .
+printf 'services:\n  trellismx:\n    image: local/trellismx-r27:review\n' > /tmp/trellismx-r27-source.yaml
+# MODEL_ROOT and TRELLISMX_ROOT must identify the complete local artifacts.
+docker compose -f examples/trellismx/compose.r27.yaml \
+  -f /tmp/trellismx-r27-source.yaml config
+# After qualification, use the same two files with `up` to select this build.
+```
+
+`compose.r27.yaml` alone continues to identify the immutable published image;
+it does not build this Dockerfile. Source-target launcher admission/delegation
+can be tested separately from model loading. Such checks do not qualify the
+full source-built image, GPU kernels, KLD, or performance.
