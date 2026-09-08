@@ -3,7 +3,7 @@
 ARG JOVIAN_IMAGE
 FROM ${JOVIAN_IMAGE} AS dependency
 RUN uv pip install --system --no-deps \
-      "b12x @ https://github.com/brandonmmusic-max/b12x/archive/36d5d55a9da264e35049b242e489ef320304919c.tar.gz"
+      "b12x @ https://github.com/brandonmmusic-max/b12x/archive/960531b0eb2509f5694c551901af6760630de2aa.tar.gz"
 
 # Explicit r27 source build; requires a core image with the r27 backend launcher.
 FROM dependency AS r27
