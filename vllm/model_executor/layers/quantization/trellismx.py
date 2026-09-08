@@ -6,11 +6,10 @@ The runtime is separately licensed and lazily imported. Dense, attention,
 router, shared-expert and MTP tensors retain the carrier's quantization.
 """
 
-import os
-
 import regex as re
 import torch
 
+from vllm import envs
 from vllm.config import get_current_vllm_config
 from vllm.logger import init_logger
 from vllm.model_executor.layers.fused_moe.activation import MoEActivation
@@ -25,7 +24,7 @@ logger = init_logger(__name__)
 
 
 def maybe_trellismx_method(config, layer, prefix):
-    directory = os.environ.get("VLLM_TRELLISMX_CHECKPOINT")
+    directory = envs.VLLM_TRELLISMX_CHECKPOINT
     index = routed_layer(prefix)
     if not directory:
         return None

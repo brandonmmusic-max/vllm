@@ -4,10 +4,10 @@ export VLLM_TRELLISMX_CHECKPOINT=${VLLM_TRELLISMX_CHECKPOINT:-/checkpoint}
 carrier=${MODEL_ROOT:-/model}
 port=${PORT:-8033}
 length=${MAX_MODEL_LEN:-1000000}
-if ! [[ "$length" =~ ^[1-9][0-9]*$ ]] || ((length > 1048576)); then
+if ! [[ "$length" =~ ^[1-9][0-9]{0,6}$ ]] || ((length > 1048576)); then
   echo 'MAX_MODEL_LEN must be in 1..1048576' >&2; exit 2;
 fi
-if ! [[ "$port" =~ ^[1-9][0-9]*$ ]] || ((port > 65535 || port == 8000)); then
+if ! [[ "$port" =~ ^[1-9][0-9]{0,4}$ ]] || ((port > 65535 || port == 8000)); then
   echo 'Choose a valid non-production PORT (not 8000)' >&2; exit 2;
 fi
 test -f "$carrier/config.json"

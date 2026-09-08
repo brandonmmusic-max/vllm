@@ -49,7 +49,7 @@ docker compose -f examples/trellismx/compose.yaml up
 The build is expensive and has **not been executed end-to-end for this PR**.
 It uses the repository's normal Docker build rather than overlaying latest
 Python on RC5's old native extensions. The addon pins the companion B12X fork
-at `51dcc6892f421a71585a2b60d777998f09e85a81`, based on current B12X
+at `ac8ef2ca23ab1f5bb45a94976b36a3ded0006bf1`, based on current B12X
 `6483963275dcf32eb2eec6d100e644d1ea647ed6`. P8, attention and PCIe now use
 one B12X installation. Their combined serving compatibility needs device
 validation; RC5 measurements do not qualify this source reconciliation.

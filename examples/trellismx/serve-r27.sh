@@ -5,7 +5,7 @@ set -euo pipefail
 export VLLM_TRELLISMX_CHECKPOINT=${VLLM_TRELLISMX_CHECKPOINT:-/checkpoint}
 carrier=${MODEL_ROOT:-/model}
 port=${PORT:-8000}
-if ! [[ "$port" =~ ^[1-9][0-9]*$ ]] || ((port > 65535)); then
+if ! [[ "$port" =~ ^[1-9][0-9]{0,4}$ ]] || ((port > 65535)); then
   echo 'Choose a valid production PORT' >&2
   exit 2
 fi
@@ -20,8 +20,8 @@ fi
 # scheduler budget, PCIe policy, and graph mode to r27's qualified launcher.
 tp=${TP:-4}
 dcp=${DCP:-4}
-if ! [[ "$tp" =~ ^[1-9][0-9]*$ && "$dcp" =~ ^[1-9][0-9]*$ ]] || ((tp % dcp != 0)); then
-  echo "DCP must divide TP; got TP=$tp DCP=$dcp" >&2
+if [[ "$tp" != 4 || "$dcp" != 4 ]]; then
+  echo "This launcher requires TP=4 and DCP=4; got TP=$tp DCP=$dcp" >&2
   exit 2
 fi
 if ((dcp != 4)); then

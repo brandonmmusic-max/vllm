@@ -3,7 +3,11 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 b12x_source=${B12X_SOURCE:?Set B12X_SOURCE to the companion B12X checkout}
 uv_bin=$(command -v uv)
-test "$(git -C "$b12x_source" rev-parse HEAD)" = 51dcc6892f421a71585a2b60d777998f09e85a81
+test "$(git -C "$b12x_source" rev-parse HEAD)" = ac8ef2ca23ab1f5bb45a94976b36a3ded0006bf1
+if [[ -n $(git -C "$b12x_source" status --porcelain --untracked-files=all) ]]; then
+  echo 'B12X_SOURCE must be clean, including untracked files' >&2
+  exit 2
+fi
 docker run --rm --network none --entrypoint /bin/bash \
  -e PYTHONPATH=/jj:/review \
  -v "$root:/jj:ro" -v "$b12x_source:/review:ro" \

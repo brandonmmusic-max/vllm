@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
-import os
 from fnmatch import fnmatch
 from typing import TYPE_CHECKING, Any, cast
 
@@ -178,9 +177,7 @@ class ModelOptQuantConfigBase(QuantizationConfig):
     def get_quant_method(
         self, layer: torch.nn.Module, prefix: str
     ) -> "QuantizeMethodBase | None":
-        if isinstance(layer, RoutedExperts) and os.environ.get(
-            "VLLM_TRELLISMX_CHECKPOINT"
-        ):
+        if isinstance(layer, RoutedExperts) and envs.VLLM_TRELLISMX_CHECKPOINT:
             from .trellismx import maybe_trellismx_method
 
             method = maybe_trellismx_method(self, layer, prefix)
@@ -2407,7 +2404,7 @@ class ModelOptMixedPrecisionConfig(ModelOptQuantConfigBase):
 
         # The GLM text-only MTP tower is outside the multimodal wrapper.
         # Keep this alias opt-in until its wider ModelOpt impact is evaluated.
-        if os.environ.get("VLLM_TRELLISMX_CHECKPOINT"):
+        if envs.VLLM_TRELLISMX_CHECKPOINT:
             import regex as re
 
             match = re.fullmatch(r"model\.layers\.(\d+)\.(?:mtp_block\.)?(.+)", prefix)
@@ -2420,9 +2417,7 @@ class ModelOptMixedPrecisionConfig(ModelOptQuantConfigBase):
         self, layer: torch.nn.Module, prefix: str
     ) -> "QuantizeMethodBase | None":
         """Return quantize-method based on layer."""
-        if isinstance(layer, RoutedExperts) and os.environ.get(
-            "VLLM_TRELLISMX_CHECKPOINT"
-        ):
+        if isinstance(layer, RoutedExperts) and envs.VLLM_TRELLISMX_CHECKPOINT:
             from .trellismx import maybe_trellismx_method
 
             config = (

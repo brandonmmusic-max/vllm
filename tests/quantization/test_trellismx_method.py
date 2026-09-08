@@ -181,7 +181,9 @@ def test_subclass_retains_exact_modelopt_scale_loader_semantics(method_inputs):
 def test_process_weights_after_loading_builds_native_sidecar(
     method_inputs, monkeypatch
 ):
-    from b12x.moe._shared.trellismx import p8_native_kernel
+    p8_native_kernel = pytest.importorskip(
+        "b12x.moe._shared.trellismx.p8_native_kernel"
+    )
 
     real_empty = torch.empty
     calls = []
@@ -292,7 +294,9 @@ def test_missing_runtime_cannot_serve_carrier(method_inputs):
 
 
 def test_native_runtime_operator_namespace_matches_calls():
-    from b12x.moe._shared.trellismx import p8_native_kernel
+    p8_native_kernel = pytest.importorskip(
+        "b12x.moe._shared.trellismx.p8_native_kernel"
+    )
 
     assert p8_native_kernel.P8NativeTPMoE is not None
     assert hasattr(torch.ops.b12x, "dense_gemm_launch")
