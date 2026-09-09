@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TrellisMX r27 DCP4 serving defaults matching the September 8 measured server.
+# TrellisMX r27 DCP4 serving defaults matching the September 9 selected reference.
 export VLLM_TRELLISMX_CHECKPOINT=${VLLM_TRELLISMX_CHECKPOINT:-/checkpoint}
 carrier=${MODEL_ROOT:-/model}
 port=${PORT:-8000}
@@ -36,7 +36,7 @@ export SPECULATOR=${SPECULATOR:-mtp}
 export NUM_SPECULATIVE_TOKENS=${NUM_SPECULATIVE_TOKENS:-3}
 export KV_CACHE_DTYPE=${KV_CACHE_DTYPE:-nvfp4_ds_mla}
 export MAX_MODEL_LEN=${MAX_MODEL_LEN:-1000000}
-export MAX_NUM_SEQS=${MAX_NUM_SEQS:-16}
+export MAX_NUM_SEQS=${MAX_NUM_SEQS:-24}
 export MAX_NUM_BATCHED_TOKENS=${MAX_NUM_BATCHED_TOKENS:-4096}
 export GPU_MEMORY_UTILIZATION=${GPU_MEMORY_UTILIZATION:-0.97}
 export CP_KV_CACHE_INTERLEAVE_SIZE=${CP_KV_CACHE_INTERLEAVE_SIZE:-4}
@@ -47,4 +47,10 @@ export MODEL_ROOT="$carrier"
 
 # r27's launcher owns these values so this overlay cannot silently regress its
 # qualified B12X, KDA, scheduler, cache, or graph selections.
+export NCCL_MIN_NCHANNELS=${NCCL_MIN_NCHANNELS:-8}
+export NCCL_MAX_NCHANNELS=${NCCL_MAX_NCHANNELS:-8}
+export VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE=${VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE:-131072}
+export VLLM_PCIE_ONESHOT_FUSED_ADD_RMS_NORM_MAX_SIZE=${VLLM_PCIE_ONESHOT_FUSED_ADD_RMS_NORM_MAX_SIZE:-86016}
+export VLLM_SHARED_EXPERTS_STREAM_TOKEN_THRESHOLD=${VLLM_SHARED_EXPERTS_STREAM_TOKEN_THRESHOLD:-4096}
+
 exec /usr/local/bin/serve-glm53-flash.sh "$carrier" "$@"

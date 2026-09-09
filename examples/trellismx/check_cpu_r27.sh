@@ -3,7 +3,7 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 b12x_source=${B12X_SOURCE:?Set B12X_SOURCE to the companion B12X checkout}
 uv_bin=$(command -v uv)
-test "$(git -C "$b12x_source" rev-parse HEAD)" = ba682a8308b3352c45a3dba457aadc2ea56d6d48
+test "$(git -C "$b12x_source" rev-parse HEAD)" = d564f6ca54c092497ec5ae7e07a272f55eec7dbe
 if [[ -n $(git -C "$b12x_source" status --porcelain --untracked-files=all) ]]; then
   echo 'B12X_SOURCE must be clean, including untracked files' >&2
   exit 2

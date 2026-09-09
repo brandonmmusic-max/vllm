@@ -1,5 +1,9 @@
 # TrellisMX on Jovian Judgement — implementation draft
 
+## September9 selected reference
+
+The selected image and matched cache KLD are documented in [REFERENCE-20260909.md](REFERENCE-20260909.md). `compose.r27.yaml` pins that tested image with24slots, MTP3, TP4/DCP4, NCCL8 and selected collective cutoffs. `serve-r27.sh` supplies the same settings for source builds. This changes the serving recipe and companion B12X pin; it does not replace unrelated vLLM source.
+
 This branch adds executable support code for the coupled
 **GLM-5.3-Flash-TrellisMX-MXFP8, 17-K5 / 25-K4** routed overlay. It is a
 review draft, **not a serving-qualified Jovian release**. No production
